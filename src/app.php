@@ -1,7 +1,7 @@
 <?php
 
 use Silex\Provider\SessionServiceProvider;
-//use Silex\Provider\FormServiceProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 
 require_once __DIR__.'/../vendor/autoload.php';
@@ -22,7 +22,29 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.class_path' => __DIR__.'/../vendor/twig/lib',
     'twig.options' => array('cache' => __DIR__.'/../cache'),
 ));
-//$app->register(new FormServiceProvider());
+$app->register(new Silex\Provider\SecurityServiceProvider());
+
+$app['security.firewalls'] = array(
+'login' => array(
+        'pattern' => '^/login$',
+    ),
+    'secured' => array(
+        'pattern' => '^/admin',
+        'form' => array('login_path' => '/login', 'check_path' => '/admin/login_check'),
+        'logout' => array('logout_path' => '/admin/logout', 'invalidate_session' => true),
+        'users' => array(
+        // raw password is foo
+        'admin' => array('ROLE_ADMIN', '$2y$10$3i9/lVd8UOFIJ6PAMFt8gu3/r5g0qeCJvoSlLCsvMTythye19F77a'),
+        ),
+    ),
+);
+
+$app->get('/login', function(Request $request) use ($app) {
+    return $app['twig']->render('login.html', array(
+        'error'         => $app['security.last_error']($request),
+        'last_username' => $app['session']->get('_security.last_username'),
+    ));
+});
 
 $app->get('/', function () use ($app) {
     $sql = "SELECT * FROM departments order by score desc";
@@ -33,7 +55,7 @@ $app->get('/', function () use ($app) {
     return $app['twig']->render('index.html', array('departments' => $departments, 'items'=>$items));
 });
 
-$app->get('/update', function () use ($app) {
+$app->get('/admin', function () use ($app) {
     $sql = "SELECT * FROM departments";
     $departments = $app['db']->fetchAll($sql);
     $sql = "SELECT * FROM items";
@@ -41,7 +63,7 @@ $app->get('/update', function () use ($app) {
     return $app['twig']->render('update.html', array('items' => $items, 'departments' => $departments));
 });
 
-$app->post('/update', function () use ($app) {
+$app->post('/admin', function () use ($app) {
 
     $itemId = $_POST['item'];
     $sql = "SELECT * FROM items where id=?";
@@ -82,7 +104,7 @@ $app->post('/update', function () use ($app) {
     }
 
     $app['session']->getFlashBag()->add('success', 'Updated');
-    return $app->redirect('/update', 301);
+    return $app->redirect('/admin', 301);
 });
 
 
