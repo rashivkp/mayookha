@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<a name="scoreboard" href="#"></a>
+<div class="row page-header">
+<div class="shadow-box center-block col-md-6" style="float:none;">
+<legend> Department Scores</legend>
+<table class="mytable table table-striped table-hover">
+  <thead>
+    <tr>
+      <th class="col-md-4">Department</th>
+      <th>Score</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for d in departments %}
+  <tr>
+    <td>{{ d.name  }}</td>
+    <td>{{ d.score }}</td>
+  </tr>
+  {% else %}
+  <tr>
+    <td colspan="3">No posts found</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<a name="items" href="#"></a>
+<br>
+
+<div class="shadow-box center-block col-md-6" style="float:none;">
+<legend> Item Based Result</legend>
+<table class="mytable table table-striped table-hover">
+  <thead>
+    <tr>
+      <th class="col-md-4">Item</th>
+      <th colspan="4">Scored</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in items %}
+  <tr>
+    <td>{{ item.name  }}</td>
+    <td>{{ item.student_name }}</td>
+    <td>{{ item.department_name }}</td>
+    <td>s{{ item.semester }}</td>
+    <td>{{ item.position }}</td>
+  </tr>
+  {% else %}
+  <tr>
+    <td colspan="3">No posts found</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+
+{% endblock %}

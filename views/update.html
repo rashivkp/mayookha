@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% for message in app.session.getFlashBag.get('success') %}
+    {{ message }}
+{% endfor %}
+<form class="form-horizontal" method="post" action="">
+  <fieldset>
+
+    <legend>Update Score</legend>
+    <!-- Select Basic -->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="item">Item</label>
+      <div class="col-md-4">
+        <select id="item" name="item" class="form-control">
+          {% for item in items %}
+          <option value="{{ item.id }}">{{ item.name  }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    {% for i in range(1, 3) %}
+    <div class="bs-callout bs-callout-info" id="callout-xref-input-group"> <h4>place {{ i }}</h4>
+      <p>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="name{{i}}">Name</label>
+        <div class="col-md-4">
+          <input id="name{{i}}" name="name{{i}}" placeholder="Name" class="form-control input-md" required="" type="text">
+
+        </div>
+      </div>
+
+      <!-- Select Basic -->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="department{{ i }}">Department</label>
+        <div class="col-md-4">
+          <select id="department" name="department{{ i }}" class="form-control">
+            {% for d in departments %}
+            <option value="{{ d.id }}">{{ d.name  }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Select Basic -->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="semester{{ i }}">Semester</label>
+        <div class="col-md-4">
+          <select id="selectbasic" name="semester{{ i }}" class="form-control">
+            <option value="1">S1</option>
+            <option value="2">S2</option>
+            <option value="3">S3</option>
+            <option value="4">S4</option>
+            <option value="5">S5</option>
+            <option value="6">S6</option>
+            <option value="7">S7</option>
+            <option value="8">S8</option>
+          </select>
+        </div>
+      </div>
+
+    </p> </div>
+    {%endfor%}
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-primary">Update</button>
+      </div>
+    </div>
+
+  </fieldset>
+</form>
+{% endblock %}
+
