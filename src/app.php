@@ -122,5 +122,8 @@ $app->post('/admin', function () use ($app) {
     return $app->redirect('/admin', 301);
 });
 
+$app->get('/about', function () use ($app) {
+    return $app['twig']->render('about.html');
+});
 
 return $app;
