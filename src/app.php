@@ -52,7 +52,10 @@ $app->get('/', function () use ($app) {
     $sql = "SELECT items.id, items.name, result.student_name, result.department_id, result.position, result.semester, departments.name as department_name FROM items
         join result on items.id = result.item_id join departments on result.department_id=departments.id order by result.id";
     $items = $app['db']->fetchAll($sql);
-    return $app['twig']->render('index.html', array('departments' => $departments, 'items'=>$items));
+    $sql = "SELECT item_id, count(*) as count from result group by item_id order by id;";
+    $itemsCount = $app['db']->fetchAll($sql);
+    $positions = array(1=>'First', 2=>'Second', 3=>'Third');
+    return $app['twig']->render('index.html', array('departments' => $departments, 'items'=>$items, 'positions'=>$positions, 'itemsCount'=>$itemsCount));
 });
 
 $app->get('/admin', function () use ($app) {
@@ -66,6 +69,14 @@ $app->get('/admin', function () use ($app) {
 $app->post('/admin', function () use ($app) {
 
     $itemId = $_POST['item'];
+    $sql = "SELECT count(*) as count FROM result where item_id=?";
+    $itemExists = $app['db']->fetchAssoc($sql, array((int)$itemId));
+
+    if ($itemExists['count'] > 0) {
+        $app['session']->getFlashBag()->add('error', '<br><br>Result already entered.!! ');
+        return $app->redirect('/admin', 301);
+    }
+
     $sql = "SELECT * FROM items where id=?";
     $item = $app['db']->fetchAssoc($sql, array((int)$itemId));
     $score = array(1=>5, 2=>3, 3=>2);
@@ -74,33 +85,37 @@ $app->post('/admin', function () use ($app) {
     }
 
     foreach(range(1, 3) as $i) {
-        $name = $_POST["name$i"];
-        $semester = $_POST["semester$i"];
-        $department = $_POST["department$i"];
+        $names = $_POST["name$i"];
+        $semesters = $_POST["semester$i"];
+        $departments = $_POST["department$i"];
 
-        if($name == '') {
-            continue;
+        foreach($names as $k=>$name) {
+            $semester = $semesters[$k];
+            $department = $departments[$k];
+            if($name == '') {
+                continue;
+            }
+
+            $sql = "INSERT INTO `result` (
+                `item_id` ,
+                `student_name` ,
+                `department_id` ,
+                `semester` ,
+                `position`
+            )
+            VALUES (
+                $itemId,
+                '$name',
+                $department,
+                $semester,
+                $i
+            );";
+            $app['db']->executeUpdate($sql);
+
+            // update score
+            $sql = "update `departments` set score = score + $score[$i] where id=?;";
+            $app['db']->executeUpdate($sql, array((int)$department));
         }
-
-        $sql = "INSERT INTO `result` (
-            `item_id` ,
-            `student_name` ,
-            `department_id` ,
-            `semester` ,
-            `position`
-        )
-        VALUES (
-            $itemId,
-            '$name',
-            $department,
-            $semester,
-            $i
-        );";
-        $app['db']->executeUpdate($sql);
-
-        // update score
-        $sql = "update `departments` set score = score + $score[$i] where id=?;";
-        $app['db']->executeUpdate($sql, array((int)$department));
     }
 
     $app['session']->getFlashBag()->add('success', 'Updated');

@@ -36,18 +36,28 @@
   <thead>
     <tr>
       <th class="col-md-4">Item</th>
-      <th colspan="4">Scored</th>
+      <th>Position</th>
+      <th>Name</th>
+      <th>Department</th>
+      <th>Semester</th>
     </tr>
   </thead>
   <tbody>
+  {% set pitem = '' %}
+  {% set i = -1  %}
   {% for item in items %}
   <tr>
-    <td>{{ item.name  }}</td>
+    {% if item.id != pitem %}
+      {% set pitem = item.id %}
+      {% set i = i + 1 %}
+      <td rowspan="{{ itemsCount[i].count }}">{{ item.name  }}</td>
+    {% endif %}
+    <td>{{ positions[item.position] }}</td>
     <td>{{ item.student_name }}</td>
     <td>{{ item.department_name }}</td>
     <td>s{{ item.semester }}</td>
-    <td>{{ item.position }}</td>
   </tr>
+
   {% else %}
   <tr>
     <td colspan="3">No posts found</td>

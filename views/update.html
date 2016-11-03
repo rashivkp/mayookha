@@ -2,8 +2,16 @@
 
 {% block content %}
 
+<div class="row page-header">
 {% for message in app.session.getFlashBag.get('success') %}
+<div class="alert alert-success">
     {{ message }}
+</div>
+{% endfor %}
+{% for message in app.session.getFlashBag.get('error') %}
+<div class="alert alert-danger">
+    {{ message|striptags }}
+</div>
 {% endfor %}
 <form class="form-horizontal" method="post" action="">
   <fieldset>
@@ -21,24 +29,24 @@
       </div>
     </div>
 
-    {% for i in range(1, 3) %}
+    {% for i in range(1, 2) %}
     <div class="bs-callout bs-callout-info" id="callout-xref-input-group"> <h4>place {{ i }}</h4>
       <p>
 
       <!-- Text input-->
       <div class="form-group">
-        <label class="col-md-4 control-label" for="name{{i}}">Name</label>
+        <label class="col-md-4 control-label" for="name{{i}}[]">Name</label>
         <div class="col-md-4">
-          <input id="name{{i}}" name="name{{i}}" placeholder="Name" class="form-control input-md" required="" type="text">
+          <input id="name{{i}}[]" name="name{{i}}[]" placeholder="Name" class="form-control input-md" required="" type="text">
 
         </div>
       </div>
 
       <!-- Select Basic -->
       <div class="form-group">
-        <label class="col-md-4 control-label" for="department{{ i }}">Department</label>
+        <label class="col-md-4 control-label" for="department{{ i }}[]">Department</label>
         <div class="col-md-4">
-          <select id="department" name="department{{ i }}" class="form-control">
+          <select id="department" name="department{{ i }}[]" class="form-control">
             {% for d in departments %}
             <option value="{{ d.id }}">{{ d.name  }}</option>
             {% endfor %}
@@ -48,9 +56,9 @@
 
       <!-- Select Basic -->
       <div class="form-group">
-        <label class="col-md-4 control-label" for="semester{{ i }}">Semester</label>
+        <label class="col-md-4 control-label" for="semester{{ i }}[]">Semester</label>
         <div class="col-md-4">
-          <select id="selectbasic" name="semester{{ i }}" class="form-control">
+          <select id="selectbasic" name="semester{{ i }}[]" class="form-control">
             <option value="1">S1</option>
             <option value="2">S2</option>
             <option value="3">S3</option>
@@ -64,6 +72,53 @@
       </div>
 
     </p> </div>
+    <a id="add{{i}}" class="btn btn-default add">Add</a>
+    {%endfor%}
+
+    {% for i in [3] %}
+    <div class="bs-callout bs-callout-info" id="callout-xref-input-group"> <h4>place {{ i }}</h4>
+      <p>
+
+      <!-- Text input-->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="name{{i}}[]">Name</label>
+        <div class="col-md-4">
+          <input id="name{{i}}[]" name="name{{i}}[]" placeholder="Name" class="form-control input-md" type="text">
+
+        </div>
+      </div>
+
+      <!-- Select Basic -->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="department{{ i }}[]">Department</label>
+        <div class="col-md-4">
+          <select id="department" name="department{{ i }}[]" class="form-control">
+            {% for d in departments %}
+            <option value="{{ d.id }}">{{ d.name  }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Select Basic -->
+      <div class="form-group">
+        <label class="col-md-4 control-label" for="semester{{ i }}[]">Semester</label>
+        <div class="col-md-4">
+          <select id="selectbasic" name="semester{{ i }}[]" class="form-control">
+            <option value="1">S1</option>
+            <option value="2">S2</option>
+            <option value="3">S3</option>
+            <option value="4">S4</option>
+            <option value="5">S5</option>
+            <option value="6">S6</option>
+            <option value="7">S7</option>
+            <option value="8">S8</option>
+          </select>
+        </div>
+      </div>
+
+    </p> </div>
+    <a id="add{{i}}" class="btn btn-default add">Add</a>
     {%endfor%}
 
     <div class="form-group">
@@ -74,5 +129,64 @@
 
   </fieldset>
 </form>
+</div>
 {% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function() {
+    {% for i in range(1, 3) %}
+    $('#add{{i}}').click(function(e){
+      console.log('hi');
+      e.preventDefault();
+      var str = '<div class="bs-callout bs-callout-info" id="callout-xref-input-group"> <h4>place {{ i }}</h4> \
+      <p> \
+      <!-- Text input--> \
+      <div class="form-group">\
+        <label class="col-md-4 control-label" for="name{{i}}[]">Name</label>\
+        <div class="col-md-4">\
+          <input id="name{{i}}[]" name="name{{i}}[]" placeholder="Name" class="form-control input-md" type="text">\
+\
+        </div>\
+      </div>\
+\
+      <!-- Select Basic -->\
+      <div class="form-group">\
+        <label class="col-md-4 control-label" for="department{{ i }}[]">Department</label>\
+        <div class="col-md-4">\
+          <select id="department" name="department{{ i }}[]" class="form-control">\
+            {% for d in departments %}\
+            <option value="{{ d.id }}">{{ d.name  }}</option>\
+            {% endfor %}\
+          </select>\
+        </div>\
+      </div>\
+\
+      <!-- Select Basic -->\
+      <div class="form-group">\
+        <label class="col-md-4 control-label" for="semester{{ i }}[]">Semester</label>\
+        <div class="col-md-4">\
+          <select id="selectbasic" name="semester{{ i }}[]" class="form-control">\
+            <option value="1">S1</option>\
+            <option value="2">S2</option>\
+            <option value="3">S3</option>\
+            <option value="4">S4</option>\
+            <option value="5">S5</option>\
+            <option value="6">S6</option>\
+            <option value="7">S7</option>\
+            <option value="8">S8</option>\
+          </select>\
+        </div>\
+      </div>\
+\
+    </p> </div>\
+    ';
+    $(this).before(str);
+    });
+  {% endfor %}
+});
+
+</script>
+{% endblock %}
+
 

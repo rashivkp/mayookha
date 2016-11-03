@@ -1,6 +1,37 @@
-<form action="/admin/login_check" method="post">
-    {{ error }}
-    <input type="text" name="_username" value="{{ last_username }}" />
-    <input type="password" name="_password" value="" />
-    <input type="submit" />
+{% extends "admin_layout.html" %}
+
+{% block content %}
+
+<form class="form-horizontal" action="/admin/login_check" method="post">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Login</legend>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="_username">Username</label>
+  <div class="col-md-4">
+  <input id="_username" name="_username" placeholder="placeholder" class="form-control input-md" type="text">
+  </div>
+</div>
+
+<!-- Password input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="_password">Password</label>
+  <div class="col-md-4">
+    <input id="_password" name="_password" placeholder="placeholder" class="form-control input-md" type="password">
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="singlebutton">&nbsp;</label>
+  <div class="col-md-4">
+    <button class="btn btn-success">Login</button>
+  </div>
+</div>
+
+</fieldset>
 </form>
+{% endblock %}
