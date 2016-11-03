@@ -16,5 +16,10 @@
             "name": "Mohamed Rashid",
             "email": "rashivkp@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+       "psr-0": {
+            "App": "src/"
+        }
+    }
 }

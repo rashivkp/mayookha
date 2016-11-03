@@ -138,6 +138,28 @@ INSERT INTO `result` (`id`, `item_id`, `student_name`, `department_id`, `semeste
 (11, 14, 'Mehabu', 3, 3, 1),
 (12, 14, 'Rajeesh', 3, 3, 2);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `roles` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_username` (`username`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `users`. default password is foo
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `roles`) VALUES
+(1, 'admin', '$2y$13$tsvaR0aMaNzzWF/GjipyneA3Yu4qEskAHwq2OgkUsaBTHFk1fADgq', 'ROLE_ADMIN');
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

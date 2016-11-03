@@ -32,10 +32,9 @@ $app['security.firewalls'] = array(
         'pattern' => '^/admin',
         'form' => array('login_path' => '/login', 'check_path' => '/admin/login_check'),
         'logout' => array('logout_path' => '/admin/logout', 'invalidate_session' => true),
-        'users' => array(
-        // raw password is foo
-        'admin' => array('ROLE_ADMIN', '$2y$10$3i9/lVd8UOFIJ6PAMFt8gu3/r5g0qeCJvoSlLCsvMTythye19F77a'),
-        ),
+        'users' => function () use ($app) {
+            return new App\UserProvider($app['db']);
+        },
     ),
 );
 
@@ -66,9 +65,9 @@ $app->get('/admin', function () use ($app) {
     return $app['twig']->render('update.html', array('items' => $items, 'departments' => $departments));
 });
 
-$app->post('/admin', function () use ($app) {
+$app->post('/admin', function (Request $request) use ($app) {
 
-    $itemId = $_POST['item'];
+    $itemId = $request->get('item');
     $sql = "SELECT count(*) as count FROM result where item_id=?";
     $itemExists = $app['db']->fetchAssoc($sql, array((int)$itemId));
 
@@ -85,9 +84,9 @@ $app->post('/admin', function () use ($app) {
     }
 
     foreach(range(1, 3) as $i) {
-        $names = $_POST["name$i"];
-        $semesters = $_POST["semester$i"];
-        $departments = $_POST["department$i"];
+        $names = $request->get( "name$i" );
+        $semesters = $request->get("semester$i");
+        $departments = $request->get("department$i");
 
         foreach($names as $k=>$name) {
             $semester = $semesters[$k];
@@ -124,6 +123,27 @@ $app->post('/admin', function () use ($app) {
 
 $app->get('/about', function () use ($app) {
     return $app['twig']->render('about.html');
+});
+
+// changing password of user, does'nt provide a form.
+// eg: /admin/change-password?password=hello
+$app->get('/admin/change-password/', function () use ($app) {
+
+    $pass = ($_GET['password'] == '')?'foo':$_GET['password'];
+
+    $token = $app['security.token_storage']->getToken();
+
+    if (null !== $token) {
+        $user = $token->getUser();
+    }
+
+    $encoder = $app['security.encoder_factory']->getEncoder($user);
+    $password = $encoder->encodePassword($pass, $user->getSalt());
+    $sql = "update `users` set password=? where username=?;";
+    $app['db']->executeUpdate($sql, array($password, $user->getUsername()));
+
+    $app['session']->getFlashBag()->add('success', 'Updated');
+    return $app->redirect('/admin', 301);
 });
 
 return $app;
